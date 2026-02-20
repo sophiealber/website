@@ -210,32 +210,59 @@ export default function SnakeGame() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [gameState, startGame]);
 
-  // Touch controls
+  // Touch controls — use native listeners with { passive: false } to prevent scroll
   const touchStart = useRef<Point | null>(null);
+  const gameAreaRef = useRef<HTMLDivElement>(null);
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
+  useEffect(() => {
+    const el = gameAreaRef.current;
+    if (!el) return;
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart.current || gameState !== "playing") return;
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStart.current.x;
-    const dy = touch.clientY - touchStart.current.y;
+    const onTouchStart = (e: TouchEvent) => {
+      if (gameStateRef.current === "playing") {
+        e.preventDefault();
+      }
+      const touch = e.touches[0];
+      touchStart.current = { x: touch.clientX, y: touch.clientY };
+    };
 
-    if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
+    const onTouchMove = (e: TouchEvent) => {
+      if (gameStateRef.current === "playing") {
+        e.preventDefault();
+      }
+    };
 
-    const dir = dirRef.current;
-    if (Math.abs(dx) > Math.abs(dy)) {
-      if (dx > 0 && dir !== "LEFT") nextDirRef.current = "RIGHT";
-      else if (dx < 0 && dir !== "RIGHT") nextDirRef.current = "LEFT";
-    } else {
-      if (dy > 0 && dir !== "UP") nextDirRef.current = "DOWN";
-      else if (dy < 0 && dir !== "DOWN") nextDirRef.current = "UP";
-    }
-    touchStart.current = null;
-  };
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!touchStart.current || gameStateRef.current !== "playing") return;
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStart.current.x;
+      const dy = touch.clientY - touchStart.current.y;
+
+      if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
+
+      const dir = dirRef.current;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0 && dir !== "LEFT") nextDirRef.current = "RIGHT";
+        else if (dx < 0 && dir !== "RIGHT") nextDirRef.current = "LEFT";
+      } else {
+        if (dy > 0 && dir !== "UP") nextDirRef.current = "DOWN";
+        else if (dy < 0 && dir !== "DOWN") nextDirRef.current = "UP";
+      }
+      touchStart.current = null;
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
 
   return (
     <section id="play" className="py-24 px-6 bg-surface-raised">
@@ -259,10 +286,9 @@ export default function SnakeGame() {
 
           {/* Canvas wrapper */}
           <div
-            className="relative rounded-xl border border-white/10 overflow-hidden"
+            ref={gameAreaRef}
+            className="relative rounded-xl border border-white/10 overflow-hidden touch-none"
             style={{ width: WIDTH, height: HEIGHT }}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
           >
             <canvas
               ref={canvasRef}
