@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: "Sophie Alber — Software Engineer",
   description:
     "Software Engineer at Datadog. Cornell CS '25, Magna Cum Laude. Based in Boston, MA.",
-  metadataBase: new URL("https://sophie-alber.vercel.app"),
+  metadataBase: new URL("https://sophiealber.github.io"),
   openGraph: {
     title: "Sophie Alber",
     description:
       "Software Engineer at Datadog. Cornell CS '25, Magna Cum Laude.",
-    url: "https://sophie-alber.vercel.app",
+    url: "https://sophiealber.github.io",
     siteName: "Sophie Alber",
     locale: "en_US",
     type: "website",

@@ -10,7 +10,18 @@
       "Bash(git -C /Users/sophiealber/code/projects/website status)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(GH_CONFIG_DIR=/tmp/gh-config gh auth setup-git:*)",
+      "Bash(git -C /Users/sophiealber/code/projects/website push origin main)",
+      "Bash(vercel domains ls:*)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel project ls:*)",
+      "Bash(vercel alias set:*)",
+      "Bash(node /Users/sophiealber/code/projects/website/scripts/generate-og.mjs:*)",
+      "Bash(dig:*)",
+      "Bash(whois:*)"
     ]
   }
 }
